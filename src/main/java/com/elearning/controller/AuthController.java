@@ -34,21 +34,35 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
     }
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-    	return ResponseEntity.status(HttpStatus.OK).body("hello");
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        try {
+            // Find the user by ID
+            User existingUser = userRepository.findById(id)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + id));
+            
+            // Update only if the new values are not null
+            if (updatedUser.getUsername() != null) existingUser.setUsername(updatedUser.getUsername());
+            if (updatedUser.getName() != null) existingUser.setName(updatedUser.getName());
+            if (updatedUser.getProfileurl() != null) existingUser.setProfileurl(updatedUser.getProfileurl());
+            if (updatedUser.getPhonenum() != null) existingUser.setPhonenum(updatedUser.getPhonenum());
+            if (updatedUser.getState() != null) existingUser.setState(updatedUser.getState());
+            if (updatedUser.getPassword() != null) existingUser.setPassword(updatedUser.getPassword()); // Ideally, hash this
+
+            // Save the updated user
+            userRepository.save(existingUser);
+
+            return ResponseEntity.ok(new ApiResponse(true, "User updated successfully."));
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse(false, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse(false, "Update failed: " + e.getMessage()));
+        }
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<ApiResponse> registerUser(@RequestBody User user) {
-//        try {
-//            registrationService.registerUser(user);
-//            return ResponseEntity.ok(new ApiResponse(true, "User registered. Check your email for OTP."));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body(new ApiResponse(false, "Registration failed: " + e.getMessage()));
-//        }
-//    }
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         try {
@@ -74,6 +88,20 @@ public class AuthController {
         }
     }
 
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> login(@PathVariable Long id ) {
+    	User user=new User();
+    	try {
+  		user= userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with Id: " + id));
+    	}
+    	catch (Exception e) {
+    		return ResponseEntity.ok("error aa gya");
+		}
+    	return ResponseEntity.ok(user);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
@@ -89,8 +117,13 @@ public class AuthController {
                 // If the passwords match, generate the JWT token
                 String token = jwtService.generateToken(user.getEmail());
                 String username=user.getUsername();
+                String phonenum = (user.getPhonenum() != null) ? user.getPhonenum() : "";
+                String state=(user.getState() != null) ? user.getState() : "";
+                Long userid=(user.getId() != null) ? user.getId() : 0;
+                String profileurl=(user.getProfileurl() != null) ? user.getProfileurl() : "";
+                String name=(user.getName() != null) ? user.getName() : "";
                 // Return the success response with the token
-                LoginResponse response = new LoginResponse(true, token,username);
+                LoginResponse response = new LoginResponse(true, token,username,email,phonenum,state,userid,profileurl,name);
                 return ResponseEntity.ok(response);
             }
 

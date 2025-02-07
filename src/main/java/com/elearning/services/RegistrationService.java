@@ -44,7 +44,8 @@ public class RegistrationService {
         // Generate a new OTP and set the expiration time
         String otp = otpService.generateOtp();
         LocalDateTime otpExpiry = otpService.getOtpExpiryTime();
-
+        user.setName(user.getUsername());
+        user.setProfileurl("https://webcrumbs.cloud/placeholder");
         // Set the OTP and expiry details
         user.setOtp(otp);
         user.setOtpExpiry(otpExpiry);
