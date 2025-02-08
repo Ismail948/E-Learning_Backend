@@ -1,33 +1,12 @@
-# Use Eclipse Temurin JDK 21 on Alpine Linux
-#FROM eclipse-temurin:21-jdk-alpine
-
-# Set a working directory inside the container
-#WORKDIR /app
-
-# Copy the Spring Boot JAR file from the target directory to the container
-#COPY target/*.jar app.jar
-
-# Expose the default Spring Boot port
-#EXPOSE 8080
-
-# Run the Spring Boot application
-#CMD ["java", "-jar", "/app/app.jar"]
-
-
-# 🛠 Stage 1: Build the application using Maven
-FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
+FROM eclipse-temurin:22-jdk-alpine
+# Set a working directory for better structure
 WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
 
-# 🚀 Stage 2: Run the application using a minimal JDK
-FROM eclipse-temurin:21-jdk-alpine
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+# Copy the Spring Boot application JAR to the image
+COPY target/*.jar app.jar
 
-# Expose the default Spring Boot port
+# Expose the application's default port
 EXPOSE 8080
 
 # Run the application
-CMD ["java", "-jar", "/app/app.jar"]
-
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
