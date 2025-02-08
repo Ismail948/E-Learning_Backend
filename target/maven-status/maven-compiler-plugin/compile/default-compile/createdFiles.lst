@@ -3,6 +3,7 @@ com\elearning\response_request\ApiResponse.class
 com\elearning\ELearningBackendApplication.class
 com\elearning\models\Course.class
 com\elearning\controller\AuthController.class
+com\elearning\controller\UploadProfilePhoto.class
 com\elearning\response_request\OtpVerificationRequest.class
 com\elearning\response_request\LoginResponse.class
 com\elearning\repositories\CourseRepository.class
