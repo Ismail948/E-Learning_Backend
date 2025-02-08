@@ -16,7 +16,7 @@ public class CustomCorsFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpServletRequest req = (HttpServletRequest) request;
 
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Replace with your frontend's URL
+        res.setHeader("Access-Control-Allow-Origin", "https://www.elearning.bitecodes.com/"); // Replace with your frontend's URL
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
         res.setHeader("Access-Control-Allow-Credentials", "true");
